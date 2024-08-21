@@ -52,34 +52,32 @@ void run_cmd(char *cmd, char *agv)
 			break;
 		}
 	}
-	if (!all_spaces)
+	if (all_spaces)
+		return;
+	path_found = find_path(cmd, path, sizeof(path));
+	if (path_found != 1 && id == -1)
 	{
-		path_found = find_path(cmd, path, sizeof(path));
-		if (path_found != 1 && id == -1)
+		dprintf(STDERR_FILENO, "%s: No such file or directory\n", agv);
+		return;
+	}
+	cmdV[0] = path;
+	cmdV[1] = NULL;
+	id = fork();
+	if (id == -1)
+	{
+		perror("fork");
+		return;
+	}
+	if (id == 0)
+	{
+		if (execve(cmdV[0], cmdV, env) == -1)
 		{
 			dprintf(STDERR_FILENO, "%s: No such file or directory\n", agv);
-			return;
+			_exit(EXIT_FAILURE);
 		}
-		cmdV[0] = path;
-		cmdV[1] = NULL;
-		id = fork();
-		if (id == -1)
-		{
-			perror("fork");
-			return;
-		}
-		printf("%s\n", cmdV[0]);
-		if (id == 0)
-		{
-			if (execve(cmdV[0], cmdV, env) == -1)
-			{
-				dprintf(STDERR_FILENO, "%s: No such file or directory\n", agv);
-				return;
-			}
-		}
-		else
-			wait(NULL);
 	}
+	else
+		wait(NULL);
 }
 /**
  * main - simple shell
