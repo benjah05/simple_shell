@@ -6,7 +6,7 @@
  */
 int cmd_exists(const char *path)
 {
-	if (access(path, F_OK | X_OK) != 1)
+	if (access(path, F_OK | X_OK) == 0)
 		return (1);
 	return (-1);
 }
@@ -19,12 +19,12 @@ int cmd_exists(const char *path)
  */
 int find_path(char *name, char *filePath, size_t pathLen)
 {
-	char *directories = getenv("PATH");
+	char *directories = getenv("PATH"), *tokPtr = NULL;
 	char *token, pathCopy[PATH_MAX];
 
 	if (name[0] == '/')
 	{
-		if (cmd_exists(name))
+		if (cmd_exists(name) == 1)
 		{
 			snprintf(filePath, pathLen, "%s", name);
 			return (1);
@@ -34,14 +34,14 @@ int find_path(char *name, char *filePath, size_t pathLen)
 	if (directories == NULL)
 		return (-1);
 	strncpy(pathCopy, directories, sizeof(pathCopy));
-	token = strtok(pathCopy, ":");
+	pathCopy[sizeof(pathCopy) - 1] = '\0';
+	token = strtok_r(pathCopy, ":", &tokPtr);
 	while (token != NULL)
 	{
 		snprintf(filePath, pathLen, "%s/%s", token, name);
 		if (cmd_exists(filePath) == 1)
 			return (1);
-		token = strtok(NULL, ":");
+		token = strtok_r(NULL, ":", &tokPtr);
 	}
-	free(token);
 	return (-1);
 }

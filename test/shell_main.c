@@ -1,83 +1,81 @@
 #include "shell.h"
-void run_cmd(char *cd, char *arg);
+void run_cmd(char **cd, char *arg);
 /**
  * handle_input - take input from stdin
  * @agv: command line argument(executable file)
  * Return: void
  */
-void handle_input(char *agv)
+void handle_input(char *agv, FILE *input_stream)
 {
-	char *input = NULL, *command;
+	char *input = NULL, *command, *TokPtr = NULL;
 	size_t len = 0;
-	int readLine;
+	int readLine, i;
+	char *cmdV[ARG_MAX_VAL];
 
 	while (1)
 	{
-		if (isatty(fileno(stdin)))
+		if (isatty(fileno(stdin)) && input_stream == stdin)
 			dprintf(STDOUT_FILENO, "$ ");
-		readLine = getline(&input, &len, stdin);
-		if (feof(stdin))
+		readLine = getline(&input, &len, input_stream);
+		if (feof(input_stream))
 			break;
 		if (readLine == -1)
 			continue;
 		if (input[readLine - 1] == '\n')
 			input[readLine - 1] = '\0';
-		command = strtok(input, " \n");
-		while (command != NULL)
+		if (input == NULL || *input == '\n' || *input == '\t')
+			continue;
+		i = 0;
+		command = strtok_r(input, " \n", &TokPtr);
+		while (command != NULL && i < ARG_MAX_VAL - 1)
 		{
-			run_cmd(command, agv);
-			command = strtok(NULL, " \n");
+			cmdV[i++] = command;
+			command = strtok_r(NULL, " \n", &TokPtr);
 		}
+		cmdV[i] = NULL;
+		if (cmdV[0] != NULL)
+			run_cmd(cmdV, agv);
 	}
 	free(input);
 }
 /**
  * run_cmd - run commands
- * @cmd: the command
- * @agv: cl argument(executable file)
+ * @cmd: double pointer to the command line args
+ * @agv: cl argument(compiled file)
  * Return: void
  */
-void run_cmd(char *cmd, char *agv)
+void run_cmd(char **cmd, char *agv)
 {
-	int all_spaces, i = 0, path_found;
-	char *cmdV[2], **env = environ, path[PATH_MAX];
-	pid_t id = -1;
+	int path_found;
+	char **env = environ, path[PATH_MAX];
+	pid_t id;
 
-	all_spaces = 1;
-	for (i = 0; cmd[i]; i++)
+	void (*f)(char **) = is_builtin(cmd);
+	if (f != NULL)
 	{
-		if (!isspace(cmd[i]))
-		{
-			all_spaces = 0;
-			break;
-		}
-	}
-	if (all_spaces)
+		f(cmd);
 		return;
-	path_found = find_path(cmd, path, sizeof(path));
-	if (path_found != 1 && id == -1)
+	}
+	path_found = find_path(cmd[0], path, sizeof(path));
+	if (path_found != 1)
 	{
 		dprintf(STDERR_FILENO, "%s: No such file or directory\n", agv);
 		return;
 	}
-	cmdV[0] = path;
-	cmdV[1] = NULL;
+	cmd[0] = path;
 	id = fork();
-	if (id == -1)
-	{
-		perror("fork");
-		return;
-	}
 	if (id == 0)
 	{
-		if (execve(cmdV[0], cmdV, env) == -1)
+		if (execve(cmd[0], cmd, env) == -1)
 		{
 			dprintf(STDERR_FILENO, "%s: No such file or directory\n", agv);
 			_exit(EXIT_FAILURE);
 		}
 	}
-	else
+	else if (id > 0)
 		wait(NULL);
+	else
+		perror("fork");
 }
 /**
  * main - simple shell
@@ -87,11 +85,20 @@ void run_cmd(char *cmd, char *agv)
  */
 int main(int argc, char *argv[])
 {
-	if (argc != 1)
+	FILE *input_stream = stdin;
+	char cmd[100];
+
+	if (argc == 2)
 	{
-		dprintf(STDERR_FILENO, "Usage: %s\n", argv[0]);
-		return (-1);
+		snprintf(cmd, sizeof(cmd), "bash -c \"%s\"", argv[1]);
+		dprintf(STDOUT_FILENO, "%s\n", cmd);
+		fflush(stdout);
+		input_stream = popen(cmd, O_RDONLY);
+		if (input_stream == NULL)
+			return (EXIT_FAILURE);
 	}
-	handle_input(argv[0]);
-	return (0);
+	handle_input(argv[0], input_stream);
+	if (input_stream != stdin)
+		pclose(input_stream);
+	return (EXIT_SUCCESS);
 }
