@@ -51,6 +51,7 @@ void run_cmd(char **cmd, char *agv)
 	pid_t id;
 
 	void (*f)(char **) = is_builtin(cmd);
+
 	if (f != NULL)
 	{
 		f(cmd);
