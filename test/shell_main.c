@@ -3,6 +3,7 @@ void run_cmd(char **cd, char *arg);
 /**
  * handle_input - take input from stdin
  * @agv: command line argument(executable file)
+ * @input_stream: stdin or file
  * Return: void
  */
 void handle_input(char *agv, FILE *input_stream)
@@ -25,6 +26,7 @@ void handle_input(char *agv, FILE *input_stream)
 			input[readLine - 1] = '\0';
 		if (input == NULL || *input == '\n' || *input == '\t')
 			continue;
+		handle_comments(input);
 		i = 0;
 		command = strtok_r(input, " \n", &TokPtr);
 		while (command != NULL && i < ARG_MAX_VAL - 1)
@@ -49,8 +51,8 @@ void run_cmd(char **cmd, char *agv)
 	int path_found;
 	char **env = environ, path[PATH_MAX];
 	pid_t id;
-
 	void (*f)(char **) = is_builtin(cmd);
+
 	if (f != NULL)
 	{
 		f(cmd);

@@ -9,6 +9,7 @@ void (*is_builtin(char **cmd))(char **)
 	built_ins b[] = {
 		{"exit", Exit},
 		{"env", _env},
+		{"cd", _cd},
 		{NULL, NULL}
 	};
 	int i = 0, j;

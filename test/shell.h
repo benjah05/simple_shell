@@ -16,14 +16,19 @@
 
 extern char **environ;
 #define ARG_MAX_VAL 1024
+#define READ_BUFFER_SIZE 1024
 
 void handle_input(char *arg, FILE *input_stream);
 void run_cmd(char **cd, char *arg);
+void handle_comments(char *input);
 int cmd_exists(const char *pathname);
 int find_path(char *n, char *pathBuffer, size_t buffSize);
 void (*is_builtin(char **cd))(char **cd);
 void Exit(char **cmd);
 void _env(char **cmd);
+void _cd(char **cmd);
+ssize_t _getline(char **linePtr, size_t *lineSize, FILE *input_stream);
+ssize_t read_input(char *readBuff, size_t *line, FILE *input_stream);
 /**
  * struct builtin_functions - struct that holds built-in functions' names
  * and their custom defined functions
