@@ -10,6 +10,8 @@ void (*is_builtin(char **cmd))(char **)
 		{"exit", Exit},
 		{"env", _env},
 		{"cd", _cd},
+		{"setenv", _setenv},
+		{"unsetenv", _unsetenv},
 		{NULL, NULL}
 	};
 	int i = 0, j;

@@ -16,3 +16,13 @@ void handle_comments(char *input)
 	}
 	input[i] = '\0';
 }
+/**
+ * handle_sigint - handle CTRL + C
+ * @sigNum: signal number
+ * Return: void
+ */
+void handle_sigint(int sigNum)
+{
+	if (sigNum == SIGINT)
+		dprintf(STDOUT_FILENO, "\n$ ");
+}

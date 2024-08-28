@@ -1,32 +1,30 @@
 #include "shell.h"
-/ * 
- * 
+/**
  * Exit - exit shell
- * @cmd: the "exit" command
+ * @cmd: the "exit" command and/or its arguments
  * Return: void
  */
-void Exit(char * * cmd)
+void Exit(char **cmd)
 {
 	int n = 0;
 
 	if (cmd[1])
 	{
 		n = atoi(cmd[1]);
-		if (!n)
+		if (n == 0 && strcmp(cmd[1], "0") != 0)
 		{
-			dprintf(STDERR_FILENO, "numeric argument required\n");
-			return;
+			dprintf(STDERR_FILENO, "exit: %s: numeric argument required\n", cmd[1]);
+			n = 1;
 		}
 	}
 	exit(n);
 }
-/ * 
- * 
+/**
  * _env - current environment
  * @cmd: the "env" command
  * Return: void
  */
-void _env(char * * cmd)
+void _env(char **cmd)
 {
 	int i = 0;
 
@@ -34,13 +32,12 @@ void _env(char * * cmd)
 	for (i = 0; environ[i]; i++)
 		dprintf(STDOUT_FILENO, "%s\n", environ[i]);
 }
-/ * 
- * 
+/**
  * _cd - change current directory
  * @cmd: the "cd" command and its arguments
  * Return: Always 0
  */
-void _cd(char * * cmd)
+void _cd(char **cmd)
 {
 	char *cwd, *dir, dirBuff[1024];
 	int cdReturn;
@@ -74,7 +71,7 @@ void _cd(char * * cmd)
 			dir = cmd[1];
 	}
 	cdReturn = chdir(dir);
-	if (cdReturn == -1) / *  cd fails! */
+	if (cdReturn == -1) /*  cd fails! */
 		dprintf(STDERR_FILENO, "can't cd to %s\n", dir);
 	else
 	{

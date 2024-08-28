@@ -13,6 +13,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <limits.h>
+#include <signal.h>
 
 extern char **environ;
 #define ARG_MAX_VAL 1024
@@ -20,6 +21,7 @@ extern char **environ;
 
 void handle_input(char *arg, FILE *input_stream);
 void run_cmd(char **cd, char *arg);
+void handle_sigint(int sigNum);
 void handle_comments(char *input);
 int cmd_exists(const char *pathname);
 int find_path(char *n, char *pathBuffer, size_t buffSize);
@@ -27,6 +29,8 @@ void (*is_builtin(char **cd))(char **cd);
 void Exit(char **cmd);
 void _env(char **cmd);
 void _cd(char **cmd);
+void _setenv(char **cmd);
+void _unsetenv(char **cmd);
 ssize_t _getline(char **linePtr, size_t *lineSize, FILE *input_stream);
 ssize_t read_input(char *readBuff, size_t *line, FILE *input_stream);
 /**
