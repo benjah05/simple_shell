@@ -18,10 +18,20 @@ void handle_input(char *agv, FILE *input_stream)
 		if (isatty(fileno(stdin)) && input_stream == stdin)
 			dprintf(STDOUT_FILENO, "$ ");
 		readLine = getline(&input, &len, input_stream);
-		if (feof(input_stream))
-			break;
 		if (readLine == -1)
-			continue;
+		{
+			if (feof(input_stream))
+			{
+				if (isatty(fileno(stdin)))
+					dprintf(STDOUT_FILENO, "\n");
+				break;
+			}
+			else
+			{
+				perror("getline");
+				continue;
+			}
+		}
 		if (input[readLine - 1] == '\n')
 			input[readLine - 1] = '\0';
 		if (input == NULL || *input == '\n' || *input == '\t')
@@ -99,7 +109,7 @@ int main(int argc, char *argv[])
 		if (input_stream == NULL)
 			return (EXIT_FAILURE);
 	}
-	/* signal(SIGINT, handle_sigint); */
+	signal(SIGINT, handle_sigint);
 	handle_input(argv[0], input_stream);
 	if (input_stream != stdin)
 		pclose(input_stream);

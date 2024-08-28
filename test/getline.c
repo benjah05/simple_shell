@@ -67,11 +67,13 @@ ssize_t _getline(char **linePtr, size_t *lineSize, FILE *input_stream)
 			}
 			*linePtr = newLine;
 		}
-		memcpy(*linePtr + totalLen, readBuff + buffIndex, copyLen);
-		totalLen += copyLen;
-		buffIndex += copyLen;
-		if (newlinePos)
-			break;
+		/**
+		 * memcpy(*linePtr + totalLen, readBuff + buffIndex, copyLen);
+		 * totalLen += copyLen;
+		 * buffIndex += copyLen;
+		 * if (newlinePos)
+		 *	break;
+		 */
 	}
 	*linePtr[totalLen] = '\0';
 	return (totalLen);

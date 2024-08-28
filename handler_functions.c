@@ -20,10 +20,9 @@ void handle_comments(char *input)
  * handle_sigint - handle CTRL + C
  * @sigNum: signal number
  * Return: void
- *
- * void handle_sigint(int sigNum)
- * {
- * if (sigNum == SIGINT)
- * dprintf(STDOUT_FILENO, "\n$ ");
- * }
  */
+void handle_sigint(int sigNum)
+{
+	if (sigNum == SIGINT)
+		dprintf(STDOUT_FILENO, "\n$ ");
+}
