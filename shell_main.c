@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
 		if (input_stream == NULL)
 			return (EXIT_FAILURE);
 	}
-	signal(SIGINT, handle_sigint);
+	/*signal(SIGINT, handle_sigint);*/
 	handle_input(argv[0], input_stream);
 	if (input_stream != stdin)
 		pclose(input_stream);

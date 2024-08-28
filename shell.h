@@ -21,7 +21,7 @@ extern char **environ;
 
 void handle_input(char *arg, FILE *input_stream);
 void run_cmd(char **cd, char *arg);
-void handle_sigint(int sigNum);
+/*void handle_sigint(int sigNum); */
 void handle_comments(char *input);
 int cmd_exists(const char *pathname);
 int find_path(char *n, char *pathBuffer, size_t buffSize);
