@@ -7,22 +7,17 @@
  */
 void handle_comments(char *input)
 {
-	int i, j;
+	int i;
 
 	for (i = 0; input[i]; i++)
 	{
 		if (input[i] == '#')
 		{
-			/* go back until we meet an empty space*/
-			for (j = i; j >= 0; j--)
+			if (i == 0 || input[i - 1] == ' ')
 			{
-				if (input[j] == ' ')
-				{
-					input[j] = '\0';
-					break;
-				}
+				input[i] = '\0';
+				break;
 			}
-			break;
 		}
 	}
 }
@@ -56,6 +51,8 @@ void handle_exit(char *input, char **cmd)
 			dprintf(STDOUT_FILENO, "exit: %s: numeric argument required\n", cmd[1]);
 			n = 1;
 		}
+		if (n < 0)
+			dprintf(STDOUT_FILENO, "exit: Illegal number: %s\n", cmd[1]);
 	}
 	free(input);
 	exit(n);
