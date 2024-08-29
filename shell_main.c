@@ -98,16 +98,23 @@ void run_cmd(char **cmd, char *agv)
 int main(int argc, char *argv[])
 {
 	FILE *input_stream = stdin;
-	char cmd[100];
-
+	int fd;
+	
 	if (argc == 2)
 	{
-		snprintf(cmd, sizeof(cmd), "bash -c \"%s\"", argv[1]);
-		dprintf(STDOUT_FILENO, "%s\n", cmd);
-		fflush(stdout);
-		input_stream = popen(cmd, O_RDONLY);
-		if (input_stream == NULL)
+		fd = open(argv[1], O_RDONLY);
+		if (fd == -1)
+		{
+			perror("opening file");
 			return (EXIT_FAILURE);
+		}
+		input_stream = fdopen(fd, "r");
+		if (input_stream == NULL)
+		{
+			perror("executing file");
+			close(fd);
+			return (EXIT_FAILURE);
+		}
 	}
 	signal(SIGINT, handle_sigint);
 	handle_input(argv[0], input_stream);
