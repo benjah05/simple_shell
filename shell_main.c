@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
 {
 	FILE *input_stream = stdin;
 	int fd;
-	
+
 	if (argc == 2)
 	{
 		fd = open(argv[1], O_RDONLY);
