@@ -7,7 +7,6 @@
 void (*is_builtin(char **cmd))(char **)
 {
 	built_ins b[] = {
-		{"exit", Exit},
 		{"env", _env},
 		{"cd", _cd},
 		{"setenv", _setenv},

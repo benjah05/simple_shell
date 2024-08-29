@@ -23,6 +23,7 @@ void handle_input(char *arg, FILE *input_stream);
 void run_cmd(char **cd, char *arg);
 void handle_sigint(int sigNum);
 void handle_comments(char *input);
+void handle_exit(char *input, char **cmd);
 int cmd_exists(const char *pathname);
 int find_path(char *n, char *pathBuffer, size_t buffSize);
 void (*is_builtin(char **cd))(char **cd);

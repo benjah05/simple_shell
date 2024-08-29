@@ -1,25 +1,5 @@
 #include "shell.h"
 /**
- * Exit - exit shell
- * @cmd: the "exit" command and/or its arguments
- * Return: void
- */
-void Exit(char **cmd)
-{
-	int n = 0;
-
-	if (cmd[1])
-	{
-		n = atoi(cmd[1]);
-		if (n == 0 && strcmp(cmd[1], "0") != 0)
-		{
-			dprintf(STDERR_FILENO, "exit: %s: numeric argument required\n", cmd[1]);
-			n = 1;
-		}
-	}
-	exit(n);
-}
-/**
  * _env - current environment
  * @cmd: the "env" command
  * Return: void
