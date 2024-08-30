@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
 		fd = open(argv[1], O_RDONLY);
 		if (fd == -1)
 		{
-			dprintf(STDERR_FILENO, "%s: Can't open %s", argv[0], argv[1]);
+			dprintf(STDERR_FILENO, "%s: %d: Can't open %s", argv[0], getpid(), argv[1]);
 			return (EXIT_FAILURE);
 		}
 		input_stream = fdopen(fd, "r");
