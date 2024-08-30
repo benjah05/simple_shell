@@ -84,7 +84,7 @@ void run_cmd(char **cmd, char *agv)
 		if (execve(cmd[0], cmd, env) == -1)
 		{
 			dprintf(STDERR_FILENO, "%s: No such file or directory\n", agv);
-			_exit(EXIT_FAILURE);
+			exit(EXIT_FAILURE);
 		}
 	}
 	else if (id > 0)
